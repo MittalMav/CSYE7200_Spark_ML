@@ -48,9 +48,11 @@ object TitanicSurvivalPred extends App{
 
 
   //count number of passengers based on sex
+  println("Gender wise count of Passengers")
   trainData.groupBy("Sex").count().show(false)
 
   //count sum of total ticket fare by class type
+  println("Total fare by class")
   trainData.groupBy("Pclass").sum("Fare").show(false)
 
   //trainData.groupBy("Sex","Age")
@@ -58,8 +60,9 @@ object TitanicSurvivalPred extends App{
   val adults = sum(when(col("age").between(19, 60), 1).otherwise(0)).as("adults_count")
   val seniorcitizen = sum(when(col("age") > 60, 1).otherwise(0)).as("seniorcitizen_count")
 
-  println("children" + children)
+  println("children " + children)
   //No of passengers grouped by age
+  println("Total no of passengers grouped by age")
   val result = trainData.select(children, adults, seniorcitizen)
   result.show()
 
@@ -100,7 +103,8 @@ object TitanicSurvivalPred extends App{
 
 
   //If we want to use same data for training and testingwe need to split it into some ratio  like below:
-  //*********************************************************************
+  //Since there is no columna named survived in test data, I preferred to divide train data into 80-20 ratio to
+  // test the accuracy of model
   // split the data into training and validation sets
   val Array(trainingData, validationData) = featureDF.randomSplit(Array(0.8, 0.2), seed = 123)
 
@@ -123,11 +127,13 @@ object TitanicSurvivalPred extends App{
   println("Area under ROC = " + areaUnderROC)
   //************************************************************************************
 
+
   val testPredictions = model.transform(testFeatures)
   testPredictions.show(5)
   val evaluator1 = new BinaryClassificationEvaluator().setLabelCol("Survived").setRawPredictionCol("testPredictions")
-  val areaUnderROC1 = evaluator.evaluate(predictions)
-  println("Area under ROC = " + areaUnderROC1)
+  // Survived does not exist in test data so we can evaluate accuracy, else it could have been done as below:
+  //val areaUnderROC1 = evaluator.evaluate(testPredictions)
+  //println("Area under ROC1 = " + areaUnderROC1)
 
   testPredictions.select(col("SexIndex"), col("Pclass"),col("PassengerId"), col("prediction").cast("Int").alias("Survived")).show(5)
 
