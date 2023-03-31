@@ -109,7 +109,7 @@ object TitanicSurvivalPred extends App{
 
   // fit the model to the training data
   val model = lr.fit(trainingData)
-0
+
   // make predictions on the validation data
   val predictions = model.transform(validationData)
 
