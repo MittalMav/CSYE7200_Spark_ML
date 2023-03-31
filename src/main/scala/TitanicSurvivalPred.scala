@@ -131,7 +131,7 @@ object TitanicSurvivalPred extends App{
   val testPredictions = model.transform(testFeatures)
   testPredictions.show(5)
   val evaluator1 = new BinaryClassificationEvaluator().setLabelCol("Survived").setRawPredictionCol("testPredictions")
-  // Survived does not exist in test data so we can evaluate accuracy, else it could have been done as below:
+  // Survived does not exist in test data so we can't evaluate accuracy, else it could have been done as below:
   //val areaUnderROC1 = evaluator.evaluate(testPredictions)
   //println("Area under ROC1 = " + areaUnderROC1)
 
