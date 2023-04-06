@@ -2,7 +2,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.ml.feature.{OneHotEncoder, StringIndexer, VectorAssembler, VectorIndexer}
 import org.apache.spark.ml.Pipeline
 import org.apache.spark.ml.classification.LogisticRegression
-import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
+import org.apache.spark.ml.evaluation.{BinaryClassificationEvaluator,MulticlassClassificationEvaluator}
 import org.apache.spark.mllib.stat.{MultivariateStatisticalSummary, Statistics}
 import org.apache.spark.sql.functions._
 
@@ -124,7 +124,7 @@ object TitanicSurvivalPred extends App{
   //val predictions2 = model.transform(testData)
 
   // print the area under ROC
-  println("Area under ROC = " + areaUnderROC)
+  println("AreaUnderROC using BinaryClassificationEvaluator = " + areaUnderROC)
   //************************************************************************************
 
 
@@ -136,5 +136,12 @@ object TitanicSurvivalPred extends App{
   //println("Area under ROC1 = " + areaUnderROC1)
 
   testPredictions.select(col("SexIndex"), col("Pclass"),col("PassengerId"), col("prediction").cast("Int").alias("Survived")).show(5)
+
+
+  val evaluator2 = new MulticlassClassificationEvaluator().setLabelCol("Survived").setPredictionCol("prediction")
+  val accuracy2 = evaluator2.evaluate(predictions)
+
+  println("accuracy using MulticlassClassificationEvaluator = " + accuracy2)
+
 
 }
